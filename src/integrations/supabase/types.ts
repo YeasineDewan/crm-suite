@@ -14,6 +14,180 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          assigned_to: string | null
+          client_id: string
+          company: string
+          created_at: string
+          email: string
+          id: string
+          last_contact: string
+          name: string
+          phone: string
+          status: string
+          total_spent: number
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          client_id: string
+          company?: string
+          created_at?: string
+          email: string
+          id?: string
+          last_contact?: string
+          name: string
+          phone?: string
+          status?: string
+          total_spent?: number
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          client_id?: string
+          company?: string
+          created_at?: string
+          email?: string
+          id?: string
+          last_contact?: string
+          name?: string
+          phone?: string
+          status?: string
+          total_spent?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      employees: {
+        Row: {
+          avatar: string
+          created_at: string
+          department: string
+          email: string
+          emp_id: string
+          id: string
+          join_date: string
+          name: string
+          performance: number
+          role: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          avatar?: string
+          created_at?: string
+          department?: string
+          email: string
+          emp_id: string
+          id?: string
+          join_date?: string
+          name: string
+          performance?: number
+          role?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar?: string
+          created_at?: string
+          department?: string
+          email?: string
+          emp_id?: string
+          id?: string
+          join_date?: string
+          name?: string
+          performance?: number
+          role?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      inventory_items: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          item_id: string
+          last_restocked: string
+          name: string
+          price: number
+          quantity: number
+          sku: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          item_id: string
+          last_restocked?: string
+          name: string
+          price?: number
+          quantity?: number
+          sku: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          last_restocked?: string
+          name?: string
+          price?: number
+          quantity?: number
+          sku?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          assigned_to: string | null
+          client_name: string
+          created_at: string
+          date: string
+          id: string
+          items: number
+          order_id: string
+          priority: string
+          status: string
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          client_name: string
+          created_at?: string
+          date?: string
+          id?: string
+          items?: number
+          order_id: string
+          priority?: string
+          status?: string
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          client_name?: string
+          created_at?: string
+          date?: string
+          id?: string
+          items?: number
+          order_id?: string
+          priority?: string
+          status?: string
+          total?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
