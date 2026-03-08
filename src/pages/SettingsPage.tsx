@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImageDropZone } from "@/components/ImageDropZone";
+import { StatusBadge } from "@/components/StatusBadge";
+import { useActivityLog, type ActivityEntry } from "@/hooks/useActivityLog";
+import { useClients } from "@/hooks/useClients";
+import { useOrders } from "@/hooks/useOrders";
+import { useEmployees } from "@/hooks/useEmployees";
+import { useInventory } from "@/hooks/useInventory";
+import { exportToCSV, exportMultipleCSV } from "@/lib/csvExport";
 import { toast } from "sonner";
-import { User, Bell, Palette, Save, Moon, Sun, Monitor } from "lucide-react";
+import {
+  User, Bell, Palette, Save, Moon, Sun, Monitor,
+  Download, Upload, History, Database,
+  FileDown, FileUp, Package, ShoppingCart, Users, Building2,
+} from "lucide-react";
 
 export default function SettingsPage() {
   const [profileForm, setProfileForm] = useState({ displayName: "Admin User", avatarUrl: "" });
@@ -24,6 +35,13 @@ export default function SettingsPage() {
     emailDigest: true,
   });
 
+  const { data: activityData, isLoading: activityLoading } = useActivityLog(100);
+  const { data: clients } = useClients();
+  const { data: orders } = useOrders();
+  const { data: employees } = useEmployees();
+  const { data: inventory } = useInventory();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleThemeChange = (t: "light" | "dark" | "system") => {
     setTheme(t);
     if (t === "dark") document.documentElement.classList.add("dark");
@@ -39,14 +57,55 @@ export default function SettingsPage() {
     toast.success("Notification preferences saved!");
   };
 
+  const handleExportAll = () => {
+    exportMultipleCSV([
+      { data: clients, filename: "clients", columns: [{ key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "company", label: "Company" }, { key: "email", label: "Email" }, { key: "status", label: "Status" }, { key: "totalSpent", label: "Total Spent" }] },
+      { data: orders, filename: "orders", columns: [{ key: "id", label: "ID" }, { key: "clientName", label: "Client" }, { key: "total", label: "Total" }, { key: "status", label: "Status" }, { key: "date", label: "Date" }] },
+      { data: employees, filename: "employees", columns: [{ key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "email", label: "Email" }, { key: "role", label: "Role" }, { key: "department", label: "Dept" }] },
+      { data: inventory, filename: "inventory", columns: [{ key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "sku", label: "SKU" }, { key: "quantity", label: "Qty" }, { key: "price", label: "Price" }] },
+    ]);
+    toast.success("All data exported as CSV files");
+  };
+
+  const handleImportCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const lines = text.split("\n").filter(Boolean);
+      if (lines.length < 2) {
+        toast.error("CSV file appears empty");
+        return;
+      }
+      toast.success(`Parsed ${lines.length - 1} rows from ${file.name}. Import processing is not yet fully implemented.`);
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString() + " " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const actionColor = (action: string) => {
+    if (action === "created") return "text-emerald-500";
+    if (action === "updated") return "text-blue-500";
+    if (action === "deleted") return "text-destructive";
+    return "text-muted-foreground";
+  };
+
   return (
-    <DashboardLayout title="Settings" subtitle="Manage your account and preferences.">
+    <DashboardLayout title="Settings" subtitle="Manage your account, data, and preferences.">
       <div className="max-w-4xl">
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="bg-card border border-border">
+          <TabsList className="bg-card border border-border flex-wrap h-auto gap-1 p-1">
             <TabsTrigger value="profile" className="gap-1.5"><User className="w-4 h-4" /> Profile</TabsTrigger>
             <TabsTrigger value="appearance" className="gap-1.5"><Palette className="w-4 h-4" /> Appearance</TabsTrigger>
             <TabsTrigger value="notifications" className="gap-1.5"><Bell className="w-4 h-4" /> Notifications</TabsTrigger>
+            <TabsTrigger value="data" className="gap-1.5"><Database className="w-4 h-4" /> Data</TabsTrigger>
+            <TabsTrigger value="activity" className="gap-1.5"><History className="w-4 h-4" /> Activity Log</TabsTrigger>
           </TabsList>
 
           {/* Profile Tab */}
@@ -163,6 +222,93 @@ export default function SettingsPage() {
               <Button onClick={handleSaveNotifications}>
                 <Save className="w-4 h-4 mr-1.5" /> Save Preferences
               </Button>
+            </div>
+          </TabsContent>
+
+          {/* Data Tab */}
+          <TabsContent value="data">
+            <div className="space-y-4">
+              <div className="bg-card rounded-xl border border-border p-6 space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Data Export</h3>
+                  <p className="text-sm text-muted-foreground">Download your CRM data as CSV files</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Button variant="outline" onClick={() => exportToCSV(clients, "clients", [{ key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "company", label: "Company" }, { key: "email", label: "Email" }, { key: "status", label: "Status" }, { key: "totalSpent", label: "Total Spent" }])}>
+                    <Building2 className="w-4 h-4 mr-2" /> Export Clients
+                  </Button>
+                  <Button variant="outline" onClick={() => exportToCSV(orders, "orders", [{ key: "id", label: "ID" }, { key: "clientName", label: "Client" }, { key: "total", label: "Total" }, { key: "status", label: "Status" }, { key: "date", label: "Date" }])}>
+                    <ShoppingCart className="w-4 h-4 mr-2" /> Export Orders
+                  </Button>
+                  <Button variant="outline" onClick={() => exportToCSV(employees, "employees", [{ key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "email", label: "Email" }, { key: "role", label: "Role" }, { key: "department", label: "Dept" }])}>
+                    <Users className="w-4 h-4 mr-2" /> Export Employees
+                  </Button>
+                  <Button variant="outline" onClick={() => exportToCSV(inventory, "inventory", [{ key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "sku", label: "SKU" }, { key: "quantity", label: "Qty" }, { key: "price", label: "Price" }])}>
+                    <Package className="w-4 h-4 mr-2" /> Export Inventory
+                  </Button>
+                </div>
+                <Button onClick={handleExportAll}>
+                  <FileDown className="w-4 h-4 mr-1.5" /> Export All Data
+                </Button>
+              </div>
+
+              <div className="bg-card rounded-xl border border-border p-6 space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Data Import</h3>
+                  <p className="text-sm text-muted-foreground">Import data from CSV files</p>
+                </div>
+                <div>
+                  <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleImportCSV} />
+                  <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                    <FileUp className="w-4 h-4 mr-1.5" /> Import CSV
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-2">Supported format: CSV with headers matching existing table columns</p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Activity Log Tab */}
+          <TabsContent value="activity">
+            <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Activity Log</h3>
+                  <p className="text-sm text-muted-foreground">Track all changes across your CRM</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => exportToCSV(activityData, "activity_log", [
+                  { key: "createdAt", label: "Date" }, { key: "entityType", label: "Entity" },
+                  { key: "entityId", label: "ID" }, { key: "action", label: "Action" },
+                  { key: "description", label: "Description" },
+                ])}>
+                  <Download className="w-4 h-4 mr-1" /> Export
+                </Button>
+              </div>
+              {activityLoading ? (
+                <p className="text-sm text-muted-foreground py-8 text-center">Loading activity...</p>
+              ) : activityData.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-8 text-center">No activity yet. Changes will appear here.</p>
+              ) : (
+                <div className="space-y-1 max-h-[500px] overflow-y-auto">
+                  {activityData.map((entry) => (
+                    <div key={entry.id} className="flex items-start gap-3 py-2.5 border-b border-border/50 last:border-0">
+                      <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${
+                        entry.action === "created" ? "bg-emerald-500" : entry.action === "deleted" ? "bg-destructive" : "bg-blue-500"
+                      }`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-foreground">{entry.description}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className={`text-xs font-medium capitalize ${actionColor(entry.action)}`}>{entry.action}</span>
+                          <span className="text-xs text-muted-foreground">•</span>
+                          <span className="text-xs text-muted-foreground capitalize">{entry.entityType}</span>
+                          <span className="text-xs text-muted-foreground">•</span>
+                          <span className="text-xs text-muted-foreground">{formatDate(entry.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
