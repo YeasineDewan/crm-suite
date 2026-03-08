@@ -1,4 +1,4 @@
-import { createSyncStoragePersister } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 
 export const localStoragePersister = createSyncStoragePersister({
   storage: window.localStorage,
