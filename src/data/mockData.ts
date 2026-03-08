@@ -56,25 +56,25 @@ export const employees: Employee[] = [
 ];
 
 export const clients: Client[] = [
-  { id: "C001", name: "Acme Corp", company: "Acme Corporation", email: "contact@acme.com", phone: "+1 555-0101", status: "active", totalSpent: 125000, lastContact: "2026-03-05" },
-  { id: "C002", name: "TechStart Inc", company: "TechStart", email: "hello@techstart.io", phone: "+1 555-0102", status: "active", totalSpent: 89000, lastContact: "2026-03-02" },
-  { id: "C003", name: "Global Solutions", company: "Global Solutions Ltd", email: "info@globalsol.com", phone: "+1 555-0103", status: "active", totalSpent: 234000, lastContact: "2026-03-07" },
-  { id: "C004", name: "Sunrise Media", company: "Sunrise Media Group", email: "biz@sunrise.com", phone: "+1 555-0104", status: "prospect", totalSpent: 0, lastContact: "2026-02-28" },
-  { id: "C005", name: "BlueWave Tech", company: "BlueWave Technologies", email: "sales@bluewave.com", phone: "+1 555-0105", status: "active", totalSpent: 67500, lastContact: "2026-03-06" },
-  { id: "C006", name: "Summit Group", company: "Summit Advisory Group", email: "team@summit.com", phone: "+1 555-0106", status: "inactive", totalSpent: 45000, lastContact: "2026-01-15" },
-  { id: "C007", name: "Horizon Labs", company: "Horizon Laboratories", email: "lab@horizon.com", phone: "+1 555-0107", status: "active", totalSpent: 178000, lastContact: "2026-03-04" },
+  { id: "C001", name: "Acme Corp", company: "Acme Corporation", email: "contact@acme.com", phone: "+1 555-0101", status: "active", totalSpent: 125000, lastContact: "2026-03-05", assignedTo: "Sarah Johnson" },
+  { id: "C002", name: "TechStart Inc", company: "TechStart", email: "hello@techstart.io", phone: "+1 555-0102", status: "active", totalSpent: 89000, lastContact: "2026-03-02", assignedTo: "James Wilson" },
+  { id: "C003", name: "Global Solutions", company: "Global Solutions Ltd", email: "info@globalsol.com", phone: "+1 555-0103", status: "active", totalSpent: 234000, lastContact: "2026-03-07", assignedTo: "Sarah Johnson" },
+  { id: "C004", name: "Sunrise Media", company: "Sunrise Media Group", email: "biz@sunrise.com", phone: "+1 555-0104", status: "prospect", totalSpent: 0, lastContact: "2026-02-28", assignedTo: "Amanda White" },
+  { id: "C005", name: "BlueWave Tech", company: "BlueWave Technologies", email: "sales@bluewave.com", phone: "+1 555-0105", status: "active", totalSpent: 67500, lastContact: "2026-03-06", assignedTo: "James Wilson" },
+  { id: "C006", name: "Summit Group", company: "Summit Advisory Group", email: "team@summit.com", phone: "+1 555-0106", status: "inactive", totalSpent: 45000, lastContact: "2026-01-15", assignedTo: "Sarah Johnson" },
+  { id: "C007", name: "Horizon Labs", company: "Horizon Laboratories", email: "lab@horizon.com", phone: "+1 555-0107", status: "active", totalSpent: 178000, lastContact: "2026-03-04", assignedTo: "Amanda White" },
 ];
 
 export const orders: Order[] = [
-  { id: "ORD-001", clientName: "Acme Corp", items: 5, total: 12500, status: "delivered", date: "2026-03-01", priority: "high" },
-  { id: "ORD-002", clientName: "TechStart Inc", items: 3, total: 8900, status: "shipped", date: "2026-03-03", priority: "medium" },
-  { id: "ORD-003", clientName: "Global Solutions", items: 12, total: 45000, status: "processing", date: "2026-03-05", priority: "high" },
-  { id: "ORD-004", clientName: "BlueWave Tech", items: 2, total: 3200, status: "pending", date: "2026-03-07", priority: "low" },
-  { id: "ORD-005", clientName: "Horizon Labs", items: 8, total: 28000, status: "processing", date: "2026-03-06", priority: "high" },
-  { id: "ORD-006", clientName: "Acme Corp", items: 1, total: 5600, status: "delivered", date: "2026-02-20", priority: "medium" },
-  { id: "ORD-007", clientName: "Summit Group", items: 4, total: 15800, status: "cancelled", date: "2026-02-15", priority: "low" },
-  { id: "ORD-008", clientName: "TechStart Inc", items: 6, total: 22400, status: "shipped", date: "2026-03-04", priority: "medium" },
-  { id: "ORD-009", clientName: "Global Solutions", items: 3, total: 9800, status: "pending", date: "2026-03-08", priority: "high" },
+  { id: "ORD-001", clientName: "Acme Corp", items: 5, total: 12500, status: "delivered", date: "2026-03-01", priority: "high", assignedTo: "Sarah Johnson" },
+  { id: "ORD-002", clientName: "TechStart Inc", items: 3, total: 8900, status: "shipped", date: "2026-03-03", priority: "medium", assignedTo: "James Wilson" },
+  { id: "ORD-003", clientName: "Global Solutions", items: 12, total: 45000, status: "processing", date: "2026-03-05", priority: "high", assignedTo: "Sarah Johnson" },
+  { id: "ORD-004", clientName: "BlueWave Tech", items: 2, total: 3200, status: "pending", date: "2026-03-07", priority: "low", assignedTo: "James Wilson" },
+  { id: "ORD-005", clientName: "Horizon Labs", items: 8, total: 28000, status: "processing", date: "2026-03-06", priority: "high", assignedTo: "Amanda White" },
+  { id: "ORD-006", clientName: "Acme Corp", items: 1, total: 5600, status: "delivered", date: "2026-02-20", priority: "medium", assignedTo: "Sarah Johnson" },
+  { id: "ORD-007", clientName: "Summit Group", items: 4, total: 15800, status: "cancelled", date: "2026-02-15", priority: "low", assignedTo: "Sarah Johnson" },
+  { id: "ORD-008", clientName: "TechStart Inc", items: 6, total: 22400, status: "shipped", date: "2026-03-04", priority: "medium", assignedTo: "James Wilson" },
+  { id: "ORD-009", clientName: "Global Solutions", items: 3, total: 9800, status: "pending", date: "2026-03-08", priority: "high", assignedTo: "Amanda White" },
 ];
 
 export const inventory: InventoryItem[] = [
