@@ -15,6 +15,10 @@ import EmployeeDashboard from "./pages/EmployeeDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import OrderDashboard from "./pages/OrderDashboard";
 import InventoryDashboard from "./pages/InventoryDashboard";
+import AttendancePage from "./pages/AttendancePage";
+import CalendarPage from "./pages/CalendarPage";
+import SalesPipelinePage from "./pages/SalesPipelinePage";
+import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import InstallPage from "./pages/InstallPage";
 import ClientDetailPage from "./pages/ClientDetailPage";
@@ -65,6 +69,10 @@ const App = () => {
           <Route path="/orders" element={<OrderDashboard />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/inventory" element={<InventoryDashboard />} />
+          <Route path="/attendance" element={<AttendancePage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/sales" element={<SalesPipelinePage />} />
+          <Route path="/reports" element={<ReportsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/install" element={<InstallPage />} />
           <Route path="*" element={<NotFound />} />

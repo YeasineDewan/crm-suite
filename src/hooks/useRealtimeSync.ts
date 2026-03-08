@@ -8,6 +8,9 @@ const TABLE_TO_QUERY_KEY: Record<string, string[]> = {
   employees: ["employees"],
   inventory_items: ["inventory"],
   activity_log: ["activity_log"],
+  attendance: ["attendance"],
+  office_events: ["office_events"],
+  deals: ["deals"],
 };
 
 export function useRealtimeSync(): void {
