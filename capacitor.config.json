@@ -1,0 +1,9 @@
+{
+  "appId": "app.lovable.3f8b0c90455047f7bb456b2cf06bfae2",
+  "appName": "CRM Pro",
+  "webDir": "dist",
+  "server": {
+    "url": "https://3f8b0c90-4550-47f7-bb45-6b2cf06bfae2.lovableproject.com?forceHideBadge=true",
+    "cleartext": true
+  }
+}
