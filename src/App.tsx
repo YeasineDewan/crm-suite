@@ -37,6 +37,7 @@ const queryClient = new QueryClient({
 
 function OnlineSyncManager() {
   useOfflineMutationSync();
+  useRealtimeSync();
   return null;
 }
 
