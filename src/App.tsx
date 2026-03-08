@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { localStoragePersister } from "@/lib/queryPersister";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { initPushNotifications } from "@/services/pushNotifications";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { useOfflineMutationSync } from "@/hooks/useOfflineMutationSync";
 import OverviewDashboard from "./pages/OverviewDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
@@ -19,8 +20,8 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: 1000 * 60 * 60 * 24, // 24 hours
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 5,
       retry: (failureCount) => (navigator.onLine ? failureCount < 3 : false),
       networkMode: "offlineFirst",
     },
@@ -30,6 +31,11 @@ const queryClient = new QueryClient({
   },
 });
 
+function OnlineSyncManager() {
+  useOfflineMutationSync();
+  return null;
+}
+
 const App = () => {
   useEffect(() => {
     initPushNotifications();
@@ -37,6 +43,7 @@ const App = () => {
 
   return (
   <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: localStoragePersister, maxAge: 1000 * 60 * 60 * 24 }}>
+    <OnlineSyncManager />
     <TooltipProvider>
       <Toaster />
       <Sonner />
