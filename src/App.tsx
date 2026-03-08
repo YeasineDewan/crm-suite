@@ -15,6 +15,7 @@ import ClientDashboard from "./pages/ClientDashboard";
 import OrderDashboard from "./pages/OrderDashboard";
 import InventoryDashboard from "./pages/InventoryDashboard";
 import SettingsPage from "./pages/SettingsPage";
+import InstallPage from "./pages/InstallPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -57,6 +58,7 @@ const App = () => {
           <Route path="/orders" element={<OrderDashboard />} />
           <Route path="/inventory" element={<InventoryDashboard />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/install" element={<InstallPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
