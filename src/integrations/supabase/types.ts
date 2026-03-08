@@ -176,6 +176,33 @@ export type Database = {
         }
         Relationships: []
       }
+      notes: {
+        Row: {
+          author_name: string
+          content: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+        }
+        Insert: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+        }
+        Update: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           assigned_to: string | null

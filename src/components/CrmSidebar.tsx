@@ -5,7 +5,7 @@ import {
   ShoppingCart,
   Package,
   Settings,
-  LogOut,
+  Download,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -21,6 +21,7 @@ const navItems = [
 ];
 
 const bottomItems = [
+  { title: "Install App", url: "/install", icon: Download },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 

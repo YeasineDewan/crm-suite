@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -11,7 +12,7 @@ import { DeleteDialog } from "@/components/forms/DeleteDialog";
 import { useDataTable } from "@/hooks/useDataTable";
 import { useClients } from "@/hooks/useClients";
 import { useActivityLog } from "@/hooks/useActivityLog";
-import { Building2, UserPlus, DollarSign, Clock, Plus, Pencil, Trash2 } from "lucide-react";
+import { Building2, UserPlus, DollarSign, Clock, Plus, Pencil, Trash2, Eye } from "lucide-react";
 import type { Client } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { ExportButton } from "@/components/ExportButton";
@@ -26,6 +27,7 @@ const CSV_COLS = [
 ];
 
 export default function ClientDashboard() {
+  const navigate = useNavigate();
   const { data, isLoading, upsert, remove } = useClients();
   const { log } = useActivityLog();
   const [formOpen, setFormOpen] = useState(false);
@@ -160,6 +162,7 @@ export default function ClientDashboard() {
                     <td className="px-5 py-3 text-muted-foreground">{client.lastContact}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => navigate(`/clients/${client.id}`)} className="p-1.5 rounded-md hover:bg-muted transition-colors"><Eye className="w-3.5 h-3.5 text-muted-foreground" /></button>
                         <button onClick={() => { setEditItem(client); setFormOpen(true); }} className="p-1.5 rounded-md hover:bg-muted transition-colors"><Pencil className="w-3.5 h-3.5 text-muted-foreground" /></button>
                         <button onClick={() => setDeleteItem(client)} className="p-1.5 rounded-md hover:bg-destructive/10 transition-colors"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
                       </div>

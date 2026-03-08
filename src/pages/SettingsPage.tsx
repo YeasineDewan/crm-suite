@@ -13,12 +13,20 @@ import { useOrders } from "@/hooks/useOrders";
 import { useEmployees } from "@/hooks/useEmployees";
 import { useInventory } from "@/hooks/useInventory";
 import { exportToCSV, exportMultipleCSV } from "@/lib/csvExport";
+import { useUserManagement, type AppRole } from "@/hooks/useUserManagement";
 import { toast } from "sonner";
 import {
   User, Bell, Palette, Save, Moon, Sun, Monitor,
-  Download, Upload, History, Database,
+  Download, Upload, History, Database, Shield,
   FileDown, FileUp, Package, ShoppingCart, Users, Building2,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function SettingsPage() {
   const [profileForm, setProfileForm] = useState({ displayName: "Admin User", avatarUrl: "" });
@@ -41,6 +49,7 @@ export default function SettingsPage() {
   const { data: employees } = useEmployees();
   const { data: inventory } = useInventory();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { data: usersData, isLoading: usersLoading, updateRole } = useUserManagement();
 
   const handleThemeChange = (t: "light" | "dark" | "system") => {
     setTheme(t);
@@ -105,6 +114,7 @@ export default function SettingsPage() {
             <TabsTrigger value="appearance" className="gap-1.5"><Palette className="w-4 h-4" /> Appearance</TabsTrigger>
             <TabsTrigger value="notifications" className="gap-1.5"><Bell className="w-4 h-4" /> Notifications</TabsTrigger>
             <TabsTrigger value="data" className="gap-1.5"><Database className="w-4 h-4" /> Data</TabsTrigger>
+            <TabsTrigger value="users" className="gap-1.5"><Shield className="w-4 h-4" /> Users</TabsTrigger>
             <TabsTrigger value="activity" className="gap-1.5"><History className="w-4 h-4" /> Activity Log</TabsTrigger>
           </TabsList>
 
@@ -265,6 +275,57 @@ export default function SettingsPage() {
                   <p className="text-xs text-muted-foreground mt-2">Supported format: CSV with headers matching existing table columns</p>
                 </div>
               </div>
+            </div>
+          </TabsContent>
+
+          {/* Users Tab */}
+          <TabsContent value="users">
+            <div className="bg-card rounded-xl border border-border p-6 space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">User Management</h3>
+                <p className="text-sm text-muted-foreground">Manage user roles and permissions</p>
+              </div>
+              {usersLoading ? (
+                <p className="text-sm text-muted-foreground py-8 text-center">Loading users...</p>
+              ) : usersData.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-8 text-center">No users found. Users appear here after signing up.</p>
+              ) : (
+                <div className="space-y-1">
+                  {usersData.map((u) => (
+                    <div key={u.roleId} className="flex items-center justify-between py-3 border-b border-border/50 last:border-0">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-xs font-semibold text-primary">
+                            {u.displayName?.slice(0, 2).toUpperCase() || "??"}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{u.displayName || "Unknown"}</p>
+                          <p className="text-xs text-muted-foreground">{u.userId.slice(0, 8)}...</p>
+                        </div>
+                      </div>
+                      <Select
+                        value={u.role}
+                        onValueChange={(val) => {
+                          updateRole.mutate({ roleId: u.roleId, newRole: val as AppRole }, {
+                            onSuccess: () => toast.success(`Role updated to ${val}`),
+                            onError: () => toast.error("Failed to update role. You may need admin permissions."),
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="w-[130px] h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="manager">Manager</SelectItem>
+                          <SelectItem value="employee">Employee</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
 
