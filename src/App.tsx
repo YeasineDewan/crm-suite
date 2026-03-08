@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { initPushNotifications } from "@/services/pushNotifications";
 import { OfflineIndicator, PWAInstallBanner } from "@/components/OfflineIndicator";
 import { useOfflineMutationSync } from "@/hooks/useOfflineMutationSync";
+import { useRealtimeSync } from "@/hooks/useRealtimeSync";
 import OverviewDashboard from "./pages/OverviewDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
