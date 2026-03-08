@@ -90,6 +90,9 @@ export function PWAInstallBanner() {
             <Button size="sm" onClick={handleInstall} className="h-8 text-xs">
               Install
             </Button>
+            <Button size="sm" variant="ghost" asChild className="h-8 text-xs">
+              <a href="/install">How to install</a>
+            </Button>
             <Button size="sm" variant="ghost" onClick={handleDismiss} className="h-8 text-xs">
               Not now
             </Button>
