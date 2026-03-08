@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -11,7 +12,7 @@ import { DeleteDialog } from "@/components/forms/DeleteDialog";
 import { useDataTable } from "@/hooks/useDataTable";
 import { useEmployees } from "@/hooks/useEmployees";
 import { useActivityLog } from "@/hooks/useActivityLog";
-import { Users, UserCheck, Clock, TrendingUp, Plus, Pencil, Trash2 } from "lucide-react";
+import { Users, UserCheck, Clock, TrendingUp, Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { departmentData, type Employee } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { ExportButton } from "@/components/ExportButton";
@@ -26,6 +27,7 @@ const CSV_COLS = [
 ];
 
 export default function EmployeeDashboard() {
+  const navigate = useNavigate();
   const { data, isLoading, upsert, remove } = useEmployees();
   const { log } = useActivityLog();
   const [formOpen, setFormOpen] = useState(false);
@@ -168,6 +170,7 @@ export default function EmployeeDashboard() {
                   </td>
                   <td className="px-5 py-3">
                     <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => navigate(`/employees/${emp.id}`)} className="p-1.5 rounded-md hover:bg-muted transition-colors"><Eye className="w-3.5 h-3.5 text-muted-foreground" /></button>
                       <button onClick={() => { setEditItem(emp); setFormOpen(true); }} className="p-1.5 rounded-md hover:bg-muted transition-colors"><Pencil className="w-3.5 h-3.5 text-muted-foreground" /></button>
                       <button onClick={() => setDeleteItem(emp)} className="p-1.5 rounded-md hover:bg-destructive/10 transition-colors"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
                     </div>
