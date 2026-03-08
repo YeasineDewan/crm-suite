@@ -12,6 +12,7 @@ import OrderDashboard from "./pages/OrderDashboard";
 import InventoryDashboard from "./pages/InventoryDashboard";
 import LoginPage from "./pages/LoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/clients" element={<ProtectedRoute><ClientDashboard /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><OrderDashboard /></ProtectedRoute>} />
             <Route path="/inventory" element={<ProtectedRoute requiredRoles={["admin", "manager"]}><InventoryDashboard /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
