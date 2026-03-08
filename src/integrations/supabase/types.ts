@@ -227,6 +227,54 @@ export type Database = {
         }
         Relationships: []
       }
+      expenses: {
+        Row: {
+          amount: number
+          approved_by: string | null
+          category: string
+          created_at: string
+          date: string
+          expense_id: string
+          id: string
+          notes: string | null
+          receipt_url: string | null
+          status: string
+          submitted_by: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          approved_by?: string | null
+          category?: string
+          created_at?: string
+          date?: string
+          expense_id: string
+          id?: string
+          notes?: string | null
+          receipt_url?: string | null
+          status?: string
+          submitted_by?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          approved_by?: string | null
+          category?: string
+          created_at?: string
+          date?: string
+          expense_id?: string
+          id?: string
+          notes?: string | null
+          receipt_url?: string | null
+          status?: string
+          submitted_by?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory_items: {
         Row: {
           category: string
@@ -264,6 +312,51 @@ export type Database = {
           price?: number
           quantity?: number
           sku?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      leave_requests: {
+        Row: {
+          approved_by: string | null
+          created_at: string
+          days: number
+          employee_id: string
+          employee_name: string
+          end_date: string
+          id: string
+          leave_type: string
+          reason: string | null
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_by?: string | null
+          created_at?: string
+          days?: number
+          employee_id: string
+          employee_name: string
+          end_date: string
+          id?: string
+          leave_type?: string
+          reason?: string | null
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_by?: string | null
+          created_at?: string
+          days?: number
+          employee_id?: string
+          employee_name?: string
+          end_date?: string
+          id?: string
+          leave_type?: string
+          reason?: string | null
+          start_date?: string
           status?: string
           updated_at?: string
         }
@@ -380,6 +473,54 @@ export type Database = {
         }
         Relationships: []
       }
+      payroll: {
+        Row: {
+          allowances: number
+          basic_salary: number
+          created_at: string
+          deductions: number
+          employee_id: string
+          employee_name: string
+          id: string
+          month: string
+          net_salary: number
+          notes: string | null
+          paid_on: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          allowances?: number
+          basic_salary?: number
+          created_at?: string
+          deductions?: number
+          employee_id: string
+          employee_name: string
+          id?: string
+          month: string
+          net_salary?: number
+          notes?: string | null
+          paid_on?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          allowances?: number
+          basic_salary?: number
+          created_at?: string
+          deductions?: number
+          employee_id?: string
+          employee_name?: string
+          id?: string
+          month?: string
+          net_salary?: number
+          notes?: string | null
+          paid_on?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -404,6 +545,54 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          assigned_to_name: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: string
+          project: string | null
+          status: string
+          tags: string[] | null
+          task_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          assigned_to_name?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          project?: string | null
+          status?: string
+          tags?: string[] | null
+          task_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          assigned_to_name?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          project?: string | null
+          status?: string
+          tags?: string[] | null
+          task_id?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

@@ -12,6 +12,10 @@ import {
   CalendarDays,
   TrendingUp,
   BarChart3,
+  Receipt,
+  CalendarOff,
+  Wallet,
+  ListTodo,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useState } from "react";
@@ -25,6 +29,10 @@ const navItems = [
   { title: "Attendance", url: "/attendance", icon: Fingerprint },
   { title: "Calendar", url: "/calendar", icon: CalendarDays },
   { title: "Sales Pipeline", url: "/sales", icon: TrendingUp },
+  { title: "Expenses", url: "/expenses", icon: Receipt },
+  { title: "Leave", url: "/leave", icon: CalendarOff },
+  { title: "Payroll", url: "/payroll", icon: Wallet },
+  { title: "Tasks", url: "/tasks", icon: ListTodo },
   { title: "Reports", url: "/reports", icon: BarChart3 },
 ];
 
