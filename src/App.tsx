@@ -7,7 +7,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { localStoragePersister } from "@/lib/queryPersister";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { initPushNotifications } from "@/services/pushNotifications";
-import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { OfflineIndicator, PWAInstallBanner } from "@/components/OfflineIndicator";
 import { useOfflineMutationSync } from "@/hooks/useOfflineMutationSync";
 import OverviewDashboard from "./pages/OverviewDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
@@ -48,6 +48,7 @@ const App = () => {
       <Toaster />
       <Sonner />
       <OfflineIndicator />
+      <PWAInstallBanner />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<OverviewDashboard />} />
