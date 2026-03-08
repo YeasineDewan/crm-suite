@@ -25,37 +25,32 @@ const toOrder = (row: DbOrder): Order => ({
   assignedTo: row.assigned_to ?? undefined,
 });
 
+async function fetchOrders(): Promise<Order[]> {
+  const { data, error } = await (supabase as any).from("orders").select("*").order("date", { ascending: false });
+  if (error) throw error;
+  return (data as DbOrder[]).map(toOrder);
+}
+
 export function useOrders() {
   const qc = useQueryClient();
   const key = ["orders"];
 
-  const query = useQuery({
-    queryKey: key,
-    queryFn: async () => {
-      const { data, error } = await supabase.from("orders").select("*").order("date", { ascending: false });
-      if (error) throw error;
-      return (data as unknown as DbOrder[]).map(toOrder);
-    },
-  });
+  const query = useQuery({ queryKey: key, queryFn: fetchOrders });
 
   const upsert = useMutation({
     mutationFn: async (order: Order) => {
-      const existing = await supabase.from("orders").select("id").eq("order_id" as any, order.id).maybeSingle();
+      const s = supabase as any;
+      const existing = await s.from("orders").select("id").eq("order_id", order.id).maybeSingle();
       const row = {
-        order_id: order.id,
-        client_name: order.clientName,
-        items: order.items,
-        total: order.total,
-        status: order.status,
-        date: order.date,
-        priority: order.priority,
-        assigned_to: order.assignedTo ?? null,
+        order_id: order.id, client_name: order.clientName, items: order.items,
+        total: order.total, status: order.status, date: order.date,
+        priority: order.priority, assigned_to: order.assignedTo ?? null,
       };
       if (existing.data) {
-        const { error } = await supabase.from("orders").update(row as any).eq("id" as any, existing.data.id);
+        const { error } = await s.from("orders").update(row).eq("id", existing.data.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("orders").insert(row as any);
+        const { error } = await s.from("orders").insert(row);
         if (error) throw error;
       }
     },
@@ -64,7 +59,7 @@ export function useOrders() {
 
   const remove = useMutation({
     mutationFn: async (orderId: string) => {
-      const { error } = await supabase.from("orders").delete().eq("order_id" as any, orderId);
+      const { error } = await (supabase as any).from("orders").delete().eq("order_id", orderId);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: key }),
