@@ -28,8 +28,8 @@ export function exportToCSV<T extends Record<string, any>>(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function exportMultipleCSV<T extends Record<string, any>>(
-  datasets: { data: T[]; filename: string; columns?: { key: keyof T; label: string }[] }[]
+export function exportMultipleCSV(
+  datasets: { data: any[]; filename: string; columns?: { key: string; label: string }[] }[]
 ) {
-  datasets.forEach(ds => exportToCSV(ds.data, ds.filename, ds.columns));
+  datasets.forEach(ds => exportToCSV(ds.data, ds.filename, ds.columns as any));
 }

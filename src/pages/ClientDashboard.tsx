@@ -4,24 +4,43 @@ import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TableToolbar, SortableHeader } from "@/components/TableToolbar";
 import { Pagination } from "@/components/Pagination";
+import { FilterBar } from "@/components/FilterBar";
+import { BulkActionsBar } from "@/components/BulkActionsBar";
 import { ClientForm } from "@/components/forms/ClientForm";
 import { DeleteDialog } from "@/components/forms/DeleteDialog";
 import { useDataTable } from "@/hooks/useDataTable";
 import { useClients } from "@/hooks/useClients";
+import { useActivityLog } from "@/hooks/useActivityLog";
 import { Building2, UserPlus, DollarSign, Clock, Plus, Pencil, Trash2 } from "lucide-react";
 import type { Client } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { ExportButton } from "@/components/ExportButton";
 import { exportToCSV } from "@/lib/csvExport";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { toast } from "sonner";
+
+const CSV_COLS = [
+  { key: "id" as const, label: "ID" }, { key: "name" as const, label: "Name" }, { key: "company" as const, label: "Company" },
+  { key: "email" as const, label: "Email" }, { key: "phone" as const, label: "Phone" }, { key: "status" as const, label: "Status" },
+  { key: "totalSpent" as const, label: "Total Spent" }, { key: "lastContact" as const, label: "Last Contact" },
+];
 
 export default function ClientDashboard() {
   const { data, isLoading, upsert, remove } = useClients();
+  const { log } = useActivityLog();
   const [formOpen, setFormOpen] = useState(false);
   const [editItem, setEditItem] = useState<Client | null>(null);
   const [deleteItem, setDeleteItem] = useState<Client | null>(null);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
-  const table = useDataTable({ data, searchFields: ["name", "company", "email"], defaultSort: "name" });
+  const table = useDataTable({
+    data,
+    searchFields: ["name", "company", "email"],
+    defaultSort: "name",
+    filterableFields: [
+      { key: "status", values: ["active", "inactive", "prospect"] },
+    ],
+  });
 
   const active = data.filter(c => c.status === "active").length;
   const prospects = data.filter(c => c.status === "prospect").length;
@@ -34,13 +53,33 @@ export default function ClientDashboard() {
   ];
 
   const handleSave = (client: Client) => {
+    const isNew = !editItem;
     upsert.mutate(client);
+    log.mutate({ entityType: "client", entityId: client.id, action: isNew ? "created" : "updated", description: `${isNew ? "Created" : "Updated"} client ${client.name}` });
     setEditItem(null);
   };
 
   const handleDelete = () => {
-    if (deleteItem) remove.mutate(deleteItem.id);
+    if (deleteItem) {
+      remove.mutate(deleteItem.id);
+      log.mutate({ entityType: "client", entityId: deleteItem.id, action: "deleted", description: `Deleted client ${deleteItem.name}` });
+    }
     setDeleteItem(null);
+  };
+
+  const handleBulkDelete = () => {
+    table.selectedIds.forEach((id) => {
+      remove.mutate(id);
+      log.mutate({ entityType: "client", entityId: id, action: "deleted", description: `Bulk deleted client ${id}` });
+    });
+    table.clearSelection();
+    setBulkDeleteOpen(false);
+    toast.success(`Deleted ${table.selectedIds.size} clients`);
+  };
+
+  const handleBulkExport = () => {
+    const selected = data.filter((c) => table.selectedIds.has(c.id));
+    exportToCSV(selected, "clients_selected", CSV_COLS);
   };
 
   if (isLoading) {
@@ -75,30 +114,28 @@ export default function ClientDashboard() {
         </div>
 
         <div className="lg:col-span-2 bg-card rounded-xl border border-border overflow-hidden">
-          <div className="p-5 border-b border-border">
+          <div className="p-5 border-b border-border space-y-3">
             <TableToolbar search={table.search} onSearchChange={table.setSearch} placeholder="Search clients...">
-              <ExportButton
-                onExportAll={() => exportToCSV(data, "clients", [
-                  { key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "company", label: "Company" },
-                  { key: "email", label: "Email" }, { key: "phone", label: "Phone" }, { key: "status", label: "Status" },
-                  { key: "totalSpent", label: "Total Spent" }, { key: "lastContact", label: "Last Contact" },
-                ])}
-                onExportFiltered={() => exportToCSV(table.filtered, "clients_filtered", [
-                  { key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "company", label: "Company" },
-                  { key: "email", label: "Email" }, { key: "phone", label: "Phone" }, { key: "status", label: "Status" },
-                  { key: "totalSpent", label: "Total Spent" }, { key: "lastContact", label: "Last Contact" },
-                ])}
-                filteredCount={table.filtered.length}
-              />
+              <ExportButton onExportAll={() => exportToCSV(data, "clients", CSV_COLS)} onExportFiltered={() => exportToCSV(table.filtered, "clients_filtered", CSV_COLS)} filteredCount={table.filtered.length} />
               <Button size="sm" onClick={() => { setEditItem(null); setFormOpen(true); }}>
                 <Plus className="w-4 h-4 mr-1" /> Add Client
               </Button>
             </TableToolbar>
+            <FilterBar filters={table.filterOptions} activeFilters={table.activeFilters} onFilterChange={table.setFilter} onClearAll={table.clearFilters} />
           </div>
+          <BulkActionsBar
+            selectedCount={table.selectedIds.size}
+            onDelete={() => setBulkDeleteOpen(true)}
+            onExport={handleBulkExport}
+            onClear={table.clearSelection}
+          />
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
+                  <th className="px-3 py-3 w-10">
+                    <input type="checkbox" checked={table.paginated.length > 0 && table.paginated.every((c) => table.selectedIds.has(c.id))} onChange={table.selectAll} className="rounded border-border" />
+                  </th>
                   <SortableHeader label="Client" sortKey="name" currentSort={table.sortKey as string} sortDir={table.sortDir} onSort={(k) => table.toggleSort(k as keyof Client)} />
                   <th className="text-left px-5 py-3 font-medium text-muted-foreground">Status</th>
                   <SortableHeader label="Total Spent" sortKey="totalSpent" currentSort={table.sortKey as string} sortDir={table.sortDir} onSort={(k) => table.toggleSort(k as keyof Client)} />
@@ -108,7 +145,10 @@ export default function ClientDashboard() {
               </thead>
               <tbody>
                 {table.paginated.map((client) => (
-                  <tr key={client.id} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                  <tr key={client.id} className={`border-b border-border/50 hover:bg-muted/20 transition-colors ${table.selectedIds.has(client.id) ? "bg-primary/5" : ""}`}>
+                    <td className="px-3 py-3">
+                      <input type="checkbox" checked={table.selectedIds.has(client.id)} onChange={() => table.toggleSelect(client.id)} className="rounded border-border" />
+                    </td>
                     <td className="px-5 py-3">
                       <div>
                         <p className="font-medium text-foreground">{client.name}</p>
@@ -135,6 +175,7 @@ export default function ClientDashboard() {
 
       <ClientForm open={formOpen} onClose={() => { setFormOpen(false); setEditItem(null); }} onSave={handleSave} client={editItem} />
       <DeleteDialog open={!!deleteItem} onClose={() => setDeleteItem(null)} onConfirm={handleDelete} title="Delete Client" description={`Are you sure you want to remove ${deleteItem?.name}?`} />
+      <DeleteDialog open={bulkDeleteOpen} onClose={() => setBulkDeleteOpen(false)} onConfirm={handleBulkDelete} title="Delete Selected" description={`Are you sure you want to delete ${table.selectedIds.size} clients?`} />
     </DashboardLayout>
   );
 }
