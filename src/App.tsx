@@ -36,10 +36,11 @@ const App = () => {
   }, []);
 
   return (
-  <QueryClientProvider client={queryClient}>
+  <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: localStoragePersister, maxAge: 1000 * 60 * 60 * 24 }}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <OfflineIndicator />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<OverviewDashboard />} />
@@ -52,7 +53,7 @@ const App = () => {
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
-  </QueryClientProvider>
+  </PersistQueryClientProvider>
   );
 };
 
