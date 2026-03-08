@@ -7,15 +7,16 @@ import { Pagination } from "@/components/Pagination";
 import { InventoryForm } from "@/components/forms/InventoryForm";
 import { DeleteDialog } from "@/components/forms/DeleteDialog";
 import { useDataTable } from "@/hooks/useDataTable";
+import { useInventory } from "@/hooks/useInventory";
 import { Package, AlertTriangle, CheckCircle, DollarSign, Plus, Pencil, Trash2 } from "lucide-react";
-import { inventory as initialInventory, type InventoryItem } from "@/data/mockData";
+import type { InventoryItem } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { ExportButton } from "@/components/ExportButton";
 import { exportToCSV } from "@/lib/csvExport";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 export default function InventoryDashboard() {
-  const [data, setData] = useState<InventoryItem[]>(initialInventory);
+  const { data, isLoading, upsert, remove } = useInventory();
   const [formOpen, setFormOpen] = useState(false);
   const [editItem, setEditItem] = useState<InventoryItem | null>(null);
   const [deleteItem, setDeleteItem] = useState<InventoryItem | null>(null);
@@ -37,18 +38,22 @@ export default function InventoryDashboard() {
   }));
 
   const handleSave = (item: InventoryItem) => {
-    setData(prev => {
-      const exists = prev.find(i => i.id === item.id);
-      if (exists) return prev.map(i => i.id === item.id ? item : i);
-      return [...prev, item];
-    });
+    upsert.mutate(item);
     setEditItem(null);
   };
 
   const handleDelete = () => {
-    if (deleteItem) setData(prev => prev.filter(i => i.id !== deleteItem.id));
+    if (deleteItem) remove.mutate(deleteItem.id);
     setDeleteItem(null);
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout title="Inventory" subtitle="Track stock levels and manage your products.">
+        <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Inventory" subtitle="Track stock levels and manage your products.">

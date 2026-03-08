@@ -7,15 +7,16 @@ import { Pagination } from "@/components/Pagination";
 import { ClientForm } from "@/components/forms/ClientForm";
 import { DeleteDialog } from "@/components/forms/DeleteDialog";
 import { useDataTable } from "@/hooks/useDataTable";
+import { useClients } from "@/hooks/useClients";
 import { Building2, UserPlus, DollarSign, Clock, Plus, Pencil, Trash2 } from "lucide-react";
-import { clients as initialClients, type Client } from "@/data/mockData";
+import type { Client } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { ExportButton } from "@/components/ExportButton";
 import { exportToCSV } from "@/lib/csvExport";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 export default function ClientDashboard() {
-  const [data, setData] = useState<Client[]>(initialClients);
+  const { data, isLoading, upsert, remove } = useClients();
   const [formOpen, setFormOpen] = useState(false);
   const [editItem, setEditItem] = useState<Client | null>(null);
   const [deleteItem, setDeleteItem] = useState<Client | null>(null);
@@ -33,18 +34,22 @@ export default function ClientDashboard() {
   ];
 
   const handleSave = (client: Client) => {
-    setData(prev => {
-      const exists = prev.find(c => c.id === client.id);
-      if (exists) return prev.map(c => c.id === client.id ? client : c);
-      return [...prev, client];
-    });
+    upsert.mutate(client);
     setEditItem(null);
   };
 
   const handleDelete = () => {
-    if (deleteItem) setData(prev => prev.filter(c => c.id !== deleteItem.id));
+    if (deleteItem) remove.mutate(deleteItem.id);
     setDeleteItem(null);
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout title="Clients" subtitle="Manage your client relationships and revenue.">
+        <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Clients" subtitle="Manage your client relationships and revenue.">
