@@ -1,7 +1,8 @@
 import { CrmSidebar } from "@/components/CrmSidebar";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
-import { Search, Moon, Sun } from "lucide-react";
+import { Search, Moon, Sun, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, title, subtitle }: DashboardLayoutProps) {
+  const { displayName, signOut, roles } = useAuth();
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       return document.documentElement.classList.contains("dark");
@@ -20,6 +22,12 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
+
+  const initials = displayName
+    ? displayName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)
+    : "U";
+
+  const roleBadge = roles.includes("admin") ? "Admin" : roles.includes("manager") ? "Manager" : "Employee";
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -47,8 +55,21 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
               {dark ? <Sun className="w-5 h-5 text-muted-foreground" /> : <Moon className="w-5 h-5 text-muted-foreground" />}
             </button>
             <NotificationDropdown />
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground text-xs font-semibold">AD</span>
+            <div className="flex items-center gap-2 pl-2 border-l border-border">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground text-xs font-semibold">{initials}</span>
+              </div>
+              <div className="hidden md:block">
+                <p className="text-xs font-medium text-foreground leading-tight">{displayName || "User"}</p>
+                <p className="text-[10px] text-muted-foreground">{roleBadge}</p>
+              </div>
+              <button
+                onClick={signOut}
+                className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors ml-1"
+                title="Sign out"
+              >
+                <LogOut className="w-4 h-4 text-muted-foreground" />
+              </button>
             </div>
           </div>
         </header>
