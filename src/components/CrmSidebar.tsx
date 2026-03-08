@@ -8,6 +8,10 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
+  Fingerprint,
+  CalendarDays,
+  TrendingUp,
+  BarChart3,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useState } from "react";
@@ -18,6 +22,10 @@ const navItems = [
   { title: "Clients", url: "/clients", icon: Building2 },
   { title: "Orders", url: "/orders", icon: ShoppingCart },
   { title: "Inventory", url: "/inventory", icon: Package },
+  { title: "Attendance", url: "/attendance", icon: Fingerprint },
+  { title: "Calendar", url: "/calendar", icon: CalendarDays },
+  { title: "Sales Pipeline", url: "/sales", icon: TrendingUp },
+  { title: "Reports", url: "/reports", icon: BarChart3 },
 ];
 
 const bottomItems = [
