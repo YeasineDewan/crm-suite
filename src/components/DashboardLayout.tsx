@@ -1,8 +1,10 @@
 import { CrmSidebar } from "@/components/CrmSidebar";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
+import { PullToRefreshIndicator } from "@/components/PullToRefreshIndicator";
 import { Search, Moon, Sun, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 interface DashboardLayoutProps {
@@ -20,6 +22,7 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { containerRef, refreshing, pullDistance } = usePullToRefresh();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -75,7 +78,8 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
             <NotificationDropdown />
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-6 overflow-auto safe-area-bottom">
+        <main ref={containerRef} className="flex-1 p-4 md:p-6 overflow-auto safe-area-bottom">
+          <PullToRefreshIndicator pullDistance={pullDistance} refreshing={refreshing} />
           {children}
         </main>
       </div>
