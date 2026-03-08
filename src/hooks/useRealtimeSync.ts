@@ -10,7 +10,7 @@ const TABLE_TO_QUERY_KEY: Record<string, string[]> = {
   activity_log: ["activity_log"],
 };
 
-export function useRealtimeSync() {
+export function useRealtimeSync(): void {
   const qc = useQueryClient();
 
   useEffect(() => {
