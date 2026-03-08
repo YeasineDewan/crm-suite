@@ -10,6 +10,8 @@ import { useDataTable } from "@/hooks/useDataTable";
 import { Building2, UserPlus, DollarSign, Clock, Plus, Pencil, Trash2 } from "lucide-react";
 import { clients as initialClients, type Client } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
+import { ExportButton } from "@/components/ExportButton";
+import { exportToCSV } from "@/lib/csvExport";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 export default function ClientDashboard() {
@@ -70,6 +72,19 @@ export default function ClientDashboard() {
         <div className="lg:col-span-2 bg-card rounded-xl border border-border overflow-hidden">
           <div className="p-5 border-b border-border">
             <TableToolbar search={table.search} onSearchChange={table.setSearch} placeholder="Search clients...">
+              <ExportButton
+                onExportAll={() => exportToCSV(data, "clients", [
+                  { key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "company", label: "Company" },
+                  { key: "email", label: "Email" }, { key: "phone", label: "Phone" }, { key: "status", label: "Status" },
+                  { key: "totalSpent", label: "Total Spent" }, { key: "lastContact", label: "Last Contact" },
+                ])}
+                onExportFiltered={() => exportToCSV(table.filtered, "clients_filtered", [
+                  { key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "company", label: "Company" },
+                  { key: "email", label: "Email" }, { key: "phone", label: "Phone" }, { key: "status", label: "Status" },
+                  { key: "totalSpent", label: "Total Spent" }, { key: "lastContact", label: "Last Contact" },
+                ])}
+                filteredCount={table.filtered.length}
+              />
               <Button size="sm" onClick={() => { setEditItem(null); setFormOpen(true); }}>
                 <Plus className="w-4 h-4 mr-1" /> Add Client
               </Button>

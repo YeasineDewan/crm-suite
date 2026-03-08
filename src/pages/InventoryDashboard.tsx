@@ -10,6 +10,8 @@ import { useDataTable } from "@/hooks/useDataTable";
 import { Package, AlertTriangle, CheckCircle, DollarSign, Plus, Pencil, Trash2 } from "lucide-react";
 import { inventory as initialInventory, type InventoryItem } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
+import { ExportButton } from "@/components/ExportButton";
+import { exportToCSV } from "@/lib/csvExport";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 export default function InventoryDashboard() {
@@ -74,6 +76,19 @@ export default function InventoryDashboard() {
         <div className="lg:col-span-2 bg-card rounded-xl border border-border overflow-hidden">
           <div className="p-5 border-b border-border">
             <TableToolbar search={table.search} onSearchChange={table.setSearch} placeholder="Search inventory...">
+              <ExportButton
+                onExportAll={() => exportToCSV(data, "inventory", [
+                  { key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "sku", label: "SKU" },
+                  { key: "category", label: "Category" }, { key: "quantity", label: "Quantity" }, { key: "price", label: "Price" },
+                  { key: "status", label: "Status" }, { key: "lastRestocked", label: "Last Restocked" },
+                ])}
+                onExportFiltered={() => exportToCSV(table.filtered, "inventory_filtered", [
+                  { key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "sku", label: "SKU" },
+                  { key: "category", label: "Category" }, { key: "quantity", label: "Quantity" }, { key: "price", label: "Price" },
+                  { key: "status", label: "Status" }, { key: "lastRestocked", label: "Last Restocked" },
+                ])}
+                filteredCount={table.filtered.length}
+              />
               <Button size="sm" onClick={() => { setEditItem(null); setFormOpen(true); }}>
                 <Plus className="w-4 h-4 mr-1" /> Add Item
               </Button>
