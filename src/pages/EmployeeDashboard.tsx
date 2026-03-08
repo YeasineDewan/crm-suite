@@ -10,6 +10,8 @@ import { useDataTable } from "@/hooks/useDataTable";
 import { Users, UserCheck, Clock, TrendingUp, Plus, Pencil, Trash2 } from "lucide-react";
 import { employees as initialEmployees, departmentData, type Employee } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
+import { ExportButton } from "@/components/ExportButton";
+import { exportToCSV } from "@/lib/csvExport";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 export default function EmployeeDashboard() {
@@ -65,6 +67,19 @@ export default function EmployeeDashboard() {
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="p-5 border-b border-border">
           <TableToolbar search={table.search} onSearchChange={table.setSearch} placeholder="Search employees...">
+            <ExportButton
+              onExportAll={() => exportToCSV(data, "employees", [
+                { key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "email", label: "Email" },
+                { key: "role", label: "Role" }, { key: "department", label: "Department" }, { key: "status", label: "Status" },
+                { key: "performance", label: "Performance" }, { key: "joinDate", label: "Join Date" },
+              ])}
+              onExportFiltered={() => exportToCSV(table.filtered, "employees_filtered", [
+                { key: "id", label: "ID" }, { key: "name", label: "Name" }, { key: "email", label: "Email" },
+                { key: "role", label: "Role" }, { key: "department", label: "Department" }, { key: "status", label: "Status" },
+                { key: "performance", label: "Performance" }, { key: "joinDate", label: "Join Date" },
+              ])}
+              filteredCount={table.filtered.length}
+            />
             <Button size="sm" onClick={() => { setEditItem(null); setFormOpen(true); }}>
               <Plus className="w-4 h-4 mr-1" /> Add Employee
             </Button>

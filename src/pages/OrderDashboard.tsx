@@ -10,6 +10,8 @@ import { useDataTable } from "@/hooks/useDataTable";
 import { ShoppingCart, Clock, Truck, CheckCircle, Plus, Pencil, Trash2 } from "lucide-react";
 import { orders as initialOrders, revenueData, type Order } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
+import { ExportButton } from "@/components/ExportButton";
+import { exportToCSV } from "@/lib/csvExport";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function OrderDashboard() {
@@ -65,6 +67,17 @@ export default function OrderDashboard() {
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="p-5 border-b border-border">
           <TableToolbar search={table.search} onSearchChange={table.setSearch} placeholder="Search orders...">
+            <ExportButton
+              onExportAll={() => exportToCSV(data, "orders", [
+                { key: "id", label: "Order ID" }, { key: "clientName", label: "Client" }, { key: "items", label: "Items" },
+                { key: "total", label: "Total" }, { key: "status", label: "Status" }, { key: "priority", label: "Priority" }, { key: "date", label: "Date" },
+              ])}
+              onExportFiltered={() => exportToCSV(table.filtered, "orders_filtered", [
+                { key: "id", label: "Order ID" }, { key: "clientName", label: "Client" }, { key: "items", label: "Items" },
+                { key: "total", label: "Total" }, { key: "status", label: "Status" }, { key: "priority", label: "Priority" }, { key: "date", label: "Date" },
+              ])}
+              filteredCount={table.filtered.length}
+            />
             <Button size="sm" onClick={() => { setEditItem(null); setFormOpen(true); }}>
               <Plus className="w-4 h-4 mr-1" /> New Order
             </Button>
