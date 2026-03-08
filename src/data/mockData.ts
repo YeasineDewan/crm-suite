@@ -19,6 +19,7 @@ export interface Client {
   status: "active" | "inactive" | "prospect";
   totalSpent: number;
   lastContact: string;
+  assignedTo?: string; // employee name
 }
 
 export interface Order {
@@ -29,6 +30,7 @@ export interface Order {
   status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   date: string;
   priority: "low" | "medium" | "high";
+  assignedTo?: string; // employee name
 }
 
 export interface InventoryItem {
