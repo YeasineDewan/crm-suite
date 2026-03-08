@@ -44,6 +44,54 @@ export type Database = {
         }
         Relationships: []
       }
+      attendance: {
+        Row: {
+          clock_in: string | null
+          clock_out: string | null
+          created_at: string
+          date: string
+          employee_id: string
+          employee_name: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          method: string
+          notes: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          clock_in?: string | null
+          clock_out?: string | null
+          created_at?: string
+          date?: string
+          employee_id: string
+          employee_name: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          method?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          clock_in?: string | null
+          clock_out?: string | null
+          created_at?: string
+          date?: string
+          employee_id?: string
+          employee_name?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          method?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           assigned_to: string | null
@@ -86,6 +134,51 @@ export type Database = {
           status?: string
           total_spent?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      deals: {
+        Row: {
+          assigned_to: string | null
+          client_name: string
+          created_at: string
+          deal_id: string
+          expected_close_date: string | null
+          id: string
+          notes: string | null
+          probability: number
+          stage: string
+          title: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          assigned_to?: string | null
+          client_name?: string
+          created_at?: string
+          deal_id: string
+          expected_close_date?: string | null
+          id?: string
+          notes?: string | null
+          probability?: number
+          stage?: string
+          title: string
+          updated_at?: string
+          value?: number
+        }
+        Update: {
+          assigned_to?: string | null
+          client_name?: string
+          created_at?: string
+          deal_id?: string
+          expected_close_date?: string | null
+          id?: string
+          notes?: string | null
+          probability?: number
+          stage?: string
+          title?: string
+          updated_at?: string
+          value?: number
         }
         Relationships: []
       }
@@ -200,6 +293,48 @@ export type Database = {
           entity_id?: string
           entity_type?: string
           id?: string
+        }
+        Relationships: []
+      }
+      office_events: {
+        Row: {
+          all_day: boolean
+          color: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          event_type: string
+          id: string
+          start_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          all_day?: boolean
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          event_type?: string
+          id?: string
+          start_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          all_day?: boolean
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          event_type?: string
+          id?: string
+          start_date?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
