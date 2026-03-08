@@ -7,15 +7,16 @@ import { Pagination } from "@/components/Pagination";
 import { OrderForm } from "@/components/forms/OrderForm";
 import { DeleteDialog } from "@/components/forms/DeleteDialog";
 import { useDataTable } from "@/hooks/useDataTable";
+import { useOrders } from "@/hooks/useOrders";
 import { ShoppingCart, Clock, Truck, CheckCircle, Plus, Pencil, Trash2 } from "lucide-react";
-import { orders as initialOrders, revenueData, type Order } from "@/data/mockData";
+import { revenueData, type Order } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { ExportButton } from "@/components/ExportButton";
 import { exportToCSV } from "@/lib/csvExport";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function OrderDashboard() {
-  const [data, setData] = useState<Order[]>(initialOrders);
+  const { data, isLoading, upsert, remove } = useOrders();
   const [formOpen, setFormOpen] = useState(false);
   const [editItem, setEditItem] = useState<Order | null>(null);
   const [deleteItem, setDeleteItem] = useState<Order | null>(null);
@@ -29,18 +30,22 @@ export default function OrderDashboard() {
   const totalValue = data.reduce((a, o) => a + o.total, 0);
 
   const handleSave = (order: Order) => {
-    setData(prev => {
-      const exists = prev.find(o => o.id === order.id);
-      if (exists) return prev.map(o => o.id === order.id ? order : o);
-      return [...prev, order];
-    });
+    upsert.mutate(order);
     setEditItem(null);
   };
 
   const handleDelete = () => {
-    if (deleteItem) setData(prev => prev.filter(o => o.id !== deleteItem.id));
+    if (deleteItem) remove.mutate(deleteItem.id);
     setDeleteItem(null);
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout title="Orders" subtitle="Track and manage all customer orders.">
+        <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Orders" subtitle="Track and manage all customer orders.">

@@ -7,15 +7,16 @@ import { Pagination } from "@/components/Pagination";
 import { EmployeeForm } from "@/components/forms/EmployeeForm";
 import { DeleteDialog } from "@/components/forms/DeleteDialog";
 import { useDataTable } from "@/hooks/useDataTable";
+import { useEmployees } from "@/hooks/useEmployees";
 import { Users, UserCheck, Clock, TrendingUp, Plus, Pencil, Trash2 } from "lucide-react";
-import { employees as initialEmployees, departmentData, type Employee } from "@/data/mockData";
+import { departmentData, type Employee } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { ExportButton } from "@/components/ExportButton";
 import { exportToCSV } from "@/lib/csvExport";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 export default function EmployeeDashboard() {
-  const [data, setData] = useState<Employee[]>(initialEmployees);
+  const { data, isLoading, upsert, remove } = useEmployees();
   const [formOpen, setFormOpen] = useState(false);
   const [editItem, setEditItem] = useState<Employee | null>(null);
   const [deleteItem, setDeleteItem] = useState<Employee | null>(null);
@@ -24,21 +25,25 @@ export default function EmployeeDashboard() {
 
   const active = data.filter(e => e.status === "active").length;
   const onLeave = data.filter(e => e.status === "on-leave").length;
-  const avgPerf = Math.round(data.reduce((a, e) => a + e.performance, 0) / data.length);
+  const avgPerf = data.length ? Math.round(data.reduce((a, e) => a + e.performance, 0) / data.length) : 0;
 
   const handleSave = (emp: Employee) => {
-    setData(prev => {
-      const exists = prev.find(e => e.id === emp.id);
-      if (exists) return prev.map(e => e.id === emp.id ? emp : e);
-      return [...prev, emp];
-    });
+    upsert.mutate(emp);
     setEditItem(null);
   };
 
   const handleDelete = () => {
-    if (deleteItem) setData(prev => prev.filter(e => e.id !== deleteItem.id));
+    if (deleteItem) remove.mutate(deleteItem.id);
     setDeleteItem(null);
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout title="Employees" subtitle="Manage your team members and their performance.">
+        <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Employees" subtitle="Manage your team members and their performance.">

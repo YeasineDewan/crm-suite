@@ -3,7 +3,10 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { DollarSign, Users, ShoppingCart, Package, TrendingUp, ArrowUpRight } from "lucide-react";
-import { revenueData, orders, clients, inventory } from "@/data/mockData";
+import { revenueData } from "@/data/mockData";
+import { useOrders } from "@/hooks/useOrders";
+import { useClients } from "@/hooks/useClients";
+import { useInventory } from "@/hooks/useInventory";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell, Legend,
@@ -15,6 +18,12 @@ const PIE_COLORS = [
 ];
 
 export default function OverviewDashboard() {
+  const { data: orders, isLoading: ordersLoading } = useOrders();
+  const { data: clients, isLoading: clientsLoading } = useClients();
+  const { data: inventory, isLoading: inventoryLoading } = useInventory();
+
+  const isLoading = ordersLoading || clientsLoading || inventoryLoading;
+
   const recentOrders = orders.slice(0, 5);
   const topClients = clients
     .filter((c) => c.status === "active")
@@ -31,7 +40,7 @@ export default function OverviewDashboard() {
       counts[o.status] = (counts[o.status] || 0) + 1;
     });
     return Object.entries(counts).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
-  }, []);
+  }, [orders]);
 
   const clientRevenueData = useMemo(() => {
     const map: Record<string, number> = {};
@@ -42,7 +51,15 @@ export default function OverviewDashboard() {
       .map(([client, revenue]) => ({ client, revenue }))
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 6);
-  }, []);
+  }, [orders]);
+
+  if (isLoading) {
+    return (
+      <DashboardLayout title="Dashboard" subtitle="Welcome back! Here's what's happening today.">
+        <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="Dashboard" subtitle="Welcome back! Here's what's happening today.">
