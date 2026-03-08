@@ -137,4 +137,33 @@
   .stat-gradient-amber {
     background: linear-gradient(135deg, hsl(38 92% 50% / 0.1), hsl(38 92% 50% / 0.05));
   }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+    opacity: 0;
+  }
+
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -8px hsl(var(--primary) / 0.15);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
