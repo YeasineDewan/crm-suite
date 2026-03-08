@@ -1,25 +1,52 @@
+import { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
-import { Users, UserCheck, UserX, Clock } from "lucide-react";
-import { employees, departmentData } from "@/data/mockData";
+import { TableToolbar, SortableHeader } from "@/components/TableToolbar";
+import { Pagination } from "@/components/Pagination";
+import { EmployeeForm } from "@/components/forms/EmployeeForm";
+import { DeleteDialog } from "@/components/forms/DeleteDialog";
+import { useDataTable } from "@/hooks/useDataTable";
+import { Users, UserCheck, Clock, TrendingUp, Plus, Pencil, Trash2 } from "lucide-react";
+import { employees as initialEmployees, departmentData, type Employee } from "@/data/mockData";
+import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 export default function EmployeeDashboard() {
-  const active = employees.filter(e => e.status === "active").length;
-  const onLeave = employees.filter(e => e.status === "on-leave").length;
-  const avgPerformance = Math.round(employees.reduce((a, e) => a + e.performance, 0) / employees.length);
+  const [data, setData] = useState<Employee[]>(initialEmployees);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Employee | null>(null);
+  const [deleteItem, setDeleteItem] = useState<Employee | null>(null);
+
+  const table = useDataTable({ data, searchFields: ["name", "email", "role", "department"], defaultSort: "name" });
+
+  const active = data.filter(e => e.status === "active").length;
+  const onLeave = data.filter(e => e.status === "on-leave").length;
+  const avgPerf = Math.round(data.reduce((a, e) => a + e.performance, 0) / data.length);
+
+  const handleSave = (emp: Employee) => {
+    setData(prev => {
+      const exists = prev.find(e => e.id === emp.id);
+      if (exists) return prev.map(e => e.id === emp.id ? emp : e);
+      return [...prev, emp];
+    });
+    setEditItem(null);
+  };
+
+  const handleDelete = () => {
+    if (deleteItem) setData(prev => prev.filter(e => e.id !== deleteItem.id));
+    setDeleteItem(null);
+  };
 
   return (
     <DashboardLayout title="Employees" subtitle="Manage your team members and their performance.">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard title="Total Employees" value={String(employees.length)} change="+2 this quarter" changeType="positive" icon={Users} gradient="stat-gradient-blue" />
+        <StatCard title="Total Employees" value={String(data.length)} change="+2 this quarter" changeType="positive" icon={Users} gradient="stat-gradient-blue" />
         <StatCard title="Active" value={String(active)} icon={UserCheck} gradient="stat-gradient-green" />
         <StatCard title="On Leave" value={String(onLeave)} icon={Clock} gradient="stat-gradient-amber" />
-        <StatCard title="Avg Performance" value={`${avgPerformance}%`} change="+3% from last quarter" changeType="positive" icon={UserX} gradient="stat-gradient-purple" />
+        <StatCard title="Avg Performance" value={`${avgPerf}%`} change="+3% from last quarter" changeType="positive" icon={TrendingUp} gradient="stat-gradient-purple" />
       </div>
 
-      {/* Department chart */}
       <div className="bg-card rounded-xl border border-border p-5 mb-6">
         <h3 className="font-semibold text-foreground mb-4">Employees by Department</h3>
         <ResponsiveContainer width="100%" height={240}>
@@ -29,32 +56,34 @@ export default function EmployeeDashboard() {
             <YAxis dataKey="name" type="category" tick={{ fontSize: 12, fill: "hsl(220, 10%, 46%)" }} width={90} />
             <Tooltip />
             <Bar dataKey="employees" radius={[0, 4, 4, 0]}>
-              {departmentData.map((entry, i) => (
-                <Cell key={i} fill={entry.color} />
-              ))}
+              {departmentData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Employee table */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="p-5 border-b border-border">
-          <h3 className="font-semibold text-foreground">All Employees</h3>
+          <TableToolbar search={table.search} onSearchChange={table.setSearch} placeholder="Search employees...">
+            <Button size="sm" onClick={() => { setEditItem(null); setFormOpen(true); }}>
+              <Plus className="w-4 h-4 mr-1" /> Add Employee
+            </Button>
+          </TableToolbar>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/30">
-                <th className="text-left px-5 py-3 font-medium text-muted-foreground">Employee</th>
-                <th className="text-left px-5 py-3 font-medium text-muted-foreground">Role</th>
-                <th className="text-left px-5 py-3 font-medium text-muted-foreground">Department</th>
+                <SortableHeader label="Employee" sortKey="name" currentSort={table.sortKey as string} sortDir={table.sortDir} onSort={(k) => table.toggleSort(k as keyof Employee)} />
+                <SortableHeader label="Role" sortKey="role" currentSort={table.sortKey as string} sortDir={table.sortDir} onSort={(k) => table.toggleSort(k as keyof Employee)} />
+                <SortableHeader label="Department" sortKey="department" currentSort={table.sortKey as string} sortDir={table.sortDir} onSort={(k) => table.toggleSort(k as keyof Employee)} />
                 <th className="text-left px-5 py-3 font-medium text-muted-foreground">Status</th>
-                <th className="text-left px-5 py-3 font-medium text-muted-foreground">Performance</th>
+                <SortableHeader label="Performance" sortKey="performance" currentSort={table.sortKey as string} sortDir={table.sortDir} onSort={(k) => table.toggleSort(k as keyof Employee)} />
+                <th className="text-right px-5 py-3 font-medium text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {employees.map((emp) => (
+              {table.paginated.map((emp) => (
                 <tr key={emp.id} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
@@ -78,12 +107,22 @@ export default function EmployeeDashboard() {
                       <span className="text-xs text-muted-foreground">{emp.performance}%</span>
                     </div>
                   </td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => { setEditItem(emp); setFormOpen(true); }} className="p-1.5 rounded-md hover:bg-muted transition-colors"><Pencil className="w-3.5 h-3.5 text-muted-foreground" /></button>
+                      <button onClick={() => setDeleteItem(emp)} className="p-1.5 rounded-md hover:bg-destructive/10 transition-colors"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        <Pagination page={table.page} totalPages={table.totalPages} total={table.total} onPageChange={table.setPage} />
       </div>
+
+      <EmployeeForm open={formOpen} onClose={() => { setFormOpen(false); setEditItem(null); }} onSave={handleSave} employee={editItem} />
+      <DeleteDialog open={!!deleteItem} onClose={() => setDeleteItem(null)} onConfirm={handleDelete} title="Delete Employee" description={`Are you sure you want to remove ${deleteItem?.name}?`} />
     </DashboardLayout>
   );
 }
