@@ -58,6 +58,7 @@ const App = () => {
           <Route path="/orders" element={<OrderDashboard />} />
           <Route path="/inventory" element={<InventoryDashboard />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/install" element={<InstallPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
