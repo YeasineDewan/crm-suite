@@ -1,9 +1,8 @@
 import { Capacitor } from "@capacitor/core";
 import { PushNotifications } from "@capacitor/push-notifications";
+import { toast } from "sonner";
 
 let initialized = false;
-
-export async function initPushNotifications() {
   if (!Capacitor.isNativePlatform() || initialized) return;
   initialized = true;
 
